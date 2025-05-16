@@ -3,6 +3,12 @@
 import { useState, useEffect } from "react";
 import { Search, Upload, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { useDropzone } from "react-dropzone";
+import { useRouter } from "next/navigation";
+import useFetch from "@/hooks/use-fetch";
+
 export function HomeSearch() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,37 +18,13 @@ export function HomeSearch() {
   const [isImageSearchActive, setIsImageSearchActive] = useState(false);
 
   // Use the useFetch hook for image processing
-  const {
-    loading: isProcessing,
-    fn: processImageFn,
-    data: processResult,
-    error: processError,
-  } = useFetch(processImageSearch);
+ 
+
 
   // Handle process result and errors with useEffect
-  useEffect(() => {
-    if (processResult?.success) {
-      const params = new URLSearchParams();
 
-      // Add extracted params to the search
-      if (processResult.data.make) params.set("make", processResult.data.make);
-      if (processResult.data.bodyType)
-        params.set("bodyType", processResult.data.bodyType);
-      if (processResult.data.color)
-        params.set("color", processResult.data.color);
 
-      // Redirect to search results
-      router.push(`/cars?${params.toString()}`);
-    }
-  }, [processResult, router]);
-
-  useEffect(() => {
-    if (processError) {
-      toast.error(
-        "Failed to analyze image: " + (processError.message || "Unknown error")
-      );
-    }
-  }, [processError]);
+ 
 
   // Handle image upload with react-dropzone
   const onDrop = (acceptedFiles) => {
@@ -180,13 +162,11 @@ export function HomeSearch() {
             {imagePreview && (
               <Button
                 type="submit"
-                className="w-full"
-                disabled={isUploading || isProcessing}
+                className="w-full mt-2"
+                disabled={isUploading }
               >
                 {isUploading
                   ? "Uploading..."
-                  : isProcessing
-                  ? "Analyzing image..."
                   : "Search with this Image"}
               </Button>
             )}

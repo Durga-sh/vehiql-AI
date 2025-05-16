@@ -30,7 +30,7 @@ export default async function Home() {
               Advanced AI Car Search and test drive from thousands of vehicles.
             </p>
           </div>
-
+        <HomeSearch/>
         </div>
       </section>
 
