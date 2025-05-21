@@ -1,9 +1,11 @@
-
+"use client"
 
 import Link from "next/link";
 import { LayoutDashboard, Car, Calendar, Cog, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
+
 
 // Navigation items
 const routes = [
