@@ -1,9 +1,10 @@
 import React from "react";
+import AddCarForm from "./cars/create/_components/add-car-form";
 
 const AdminPage = () => {
     return (
         <div>
-            AdminPage
+            <AddCarForm/>
         </div>
     )
 }
