@@ -171,7 +171,7 @@ export async function addCar({ carData, images }) {
 
       // Upload the file buffer directly
       const { data, error } = await supabase.storage
-        .from("car-images")
+        .from("car-image")
         .upload(filePath, imageBuffer, {
           contentType: `image/${fileExtension}`,
         });
