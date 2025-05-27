@@ -1,13 +1,21 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import React, { useState } from "react"; 
-import { Plus, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCars, deleteCar, updateCarStatus } from "@/actions/cars";
-import { formatCurrency } from "@/lib/helper";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Star,
+  StarOff,
+  Trash2,
+  Eye,
+  Loader2,
+  Car as CarIcon,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,15 +32,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import useFetch from "@/hooks/use-fetch";
+import { getCars, deleteCar, updateCarStatus } from "@/actions/cars";
+import { formatCurrency } from "@/lib/helper";
+import Image from "next/image";
 
+export const CarsList = () => {
+  const router = useRouter();
 
-import { CardContent } from "@/components/ui/card";
-export const CarList = () => {
+  // State for search and dialogs
   const [search, setSearch] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [carToDelete, setCarToDelete] = useState(null);
-
-  const router = useRouter();
 
   // Custom hooks for API calls
   const {
@@ -41,11 +62,6 @@ export const CarList = () => {
     data: carsData,
     error: carsError,
   } = useFetch(getCars);
-
-  // Initial fetch and refetch on search changes
-  useEffect(() => {
-    fetchCars(search);
-  }, [search]);
 
   const {
     loading: deletingCar,
@@ -60,6 +76,11 @@ export const CarList = () => {
     data: updateResult,
     error: updateError,
   } = useFetch(updateCarStatus);
+
+  // Initial fetch and refetch on search changes
+  useEffect(() => {
+    fetchCars(search);
+  }, [search]);
 
   // Handle errors
   useEffect(() => {
@@ -89,6 +110,21 @@ export const CarList = () => {
     }
   }, [deleteResult, updateResult, search]);
 
+  // Handle search submit
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    fetchCars(search);
+  };
+
+  // Handle delete car
+  const handleDeleteCar = async () => {
+    if (!carToDelete) return;
+
+    await deleteCarFn(carToDelete.id);
+    setDeleteDialogOpen(false);
+    setCarToDelete(null);
+  };
+
   // Handle toggle featured status
   const handleToggleFeatured = async (car) => {
     await updateCarStatusFn(car.id, { featured: !car.featured });
@@ -99,6 +135,7 @@ export const CarList = () => {
     await updateCarStatusFn(car.id, { status: newStatus });
   };
 
+  // Get status badge color
   const getStatusBadge = (status) => {
     switch (status) {
       case "AVAILABLE":
@@ -124,23 +161,9 @@ export const CarList = () => {
     }
   };
 
-  // Handle search submit
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    fetchCars(search);
-  };
-
-  // Handle delete car
-  const handleDeleteCar = async () => {
-    if (!carToDelete) return;
-
-    await deleteCarFn(carToDelete.id);
-    setDeleteDialogOpen(false);
-    setCarToDelete(null);
-  };
-
   return (
-    <div>
+    <div className="space-y-4">
+      {/* Actions and Search */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <Button
           onClick={() => router.push("/admin/cars/create")}
@@ -165,8 +188,7 @@ export const CarList = () => {
         </form>
       </div>
 
-      {/*cars table*/}
-
+      {/* Cars Table */}
       <Card>
         <CardContent className="p-0">
           {loadingCars && !carsData ? (
@@ -192,7 +214,7 @@ export const CarList = () => {
                     <TableRow key={car.id}>
                       <TableCell>
                         <div className="w-10 h-10 rounded-md overflow-hidden">
-                          {car.images && car.images.length > 0 ? (
+                          {car.image && car.image.length > 0 ? (
                             <Image
                               src={car.images[0]}
                               alt={`${car.make} ${car.model}`}
@@ -313,7 +335,43 @@ export const CarList = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete {carToDelete?.make}{" "}
+              {carToDelete?.model} ({carToDelete?.year})? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={deletingCar}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCar}
+              disabled={deletingCar}
+            >
+              {deletingCar ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Car"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}
-
+};
