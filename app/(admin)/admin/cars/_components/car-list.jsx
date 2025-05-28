@@ -216,7 +216,7 @@ export const CarsList = () => {
                         <div className="w-10 h-10 rounded-md overflow-hidden">
                           {car.image && car.image.length > 0 ? (
                             <Image
-                              src={car.images[0]}
+                              src={car.image[0]}
                               alt={`${car.make} ${car.model}`}
                               height={40}
                               width={40}
