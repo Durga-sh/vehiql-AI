@@ -12,9 +12,12 @@ import { CarCard } from "@/components/car-card";
 import { HomeSearch } from "@/components/home-search";
 import Link from "next/link";
 import Image from "next/image";
-import { bodyTypes, carMakes, faqItems, featuredCars } from "@/lib/data";
+import { bodyTypes, carMakes, faqItems } from "@/lib/data";
+import { getFeaturedCars } from "@/actions/home";
 
 export default async function Home() {
+
+  const featuredCars = await getFeaturedCars();
  
 
   return (
