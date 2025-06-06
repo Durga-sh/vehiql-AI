@@ -216,10 +216,10 @@ export const CarsList = () => {
                         <div className="w-10 h-10 rounded-md overflow-hidden">
                           {car.image && car.image.length > 0 ? (
                             <Image
-                              src={car.image[0]}
+                              src={car.image[1]}
                               alt={`${car.make} ${car.model}`}
-                              height={40}
-                              width={40}
+                              height={400}
+                              width={400}
                               className="w-full h-full object-cover"
                               priority
                             />

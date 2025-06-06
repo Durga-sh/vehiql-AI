@@ -224,8 +224,6 @@ export async function addCar({ carData, images }) {
     throw new Error("Error adding car:" + error.message);
   }
 }
-
-
 export async function getCars(search = "") {
   try {
     // Build where conditions
