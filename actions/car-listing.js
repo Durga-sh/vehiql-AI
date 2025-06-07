@@ -1,5 +1,10 @@
+"use server";
+
 import { db } from "@/lib/prisma";
 import { serializeCarData } from "@/lib/helper";
+import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
+
 export async function getCarFilters() {
   try {
     const makes = await db.car.findMany({
@@ -52,7 +57,13 @@ export async function getCarFilters() {
         },
       },
     };
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error fetching car filters:", error);
+    return {
+      success: false,
+      error: "Failed to fetch car filters",
+    };
+  }
 }
 
 export async function getCars({
@@ -162,7 +173,11 @@ export async function getCars({
       },
     };
   } catch (error) {
-    throw new Error("Error fetching cars:" + error.message);
+    console.error("Error fetching cars:", error);
+    return {
+      success: false,
+      error: "Failed to fetch cars: " + error.message,
+    };
   }
 }
 
@@ -233,6 +248,10 @@ export async function toggleSavedCar(carId) {
       message: "Car added to favorites",
     };
   } catch (error) {
-    throw new Error("Error toggling saved car:" + error.message);
+    console.error("Error toggling saved car:", error);
+    return {
+      success: false,
+      error: "Failed to toggle saved car: " + error.message,
+    };
   }
 }
