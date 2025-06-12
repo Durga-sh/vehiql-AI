@@ -27,7 +27,7 @@ const routes = [
   {
     label: "Settings",
     icon: Cog,
-    href: "/admin/settings",
+    href: "/admin/setting",
   },
 ];
 
